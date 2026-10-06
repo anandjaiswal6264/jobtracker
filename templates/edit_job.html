@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="form-container">
+
+    <h1>Edit Job Application</h1>
+
+    <form method="POST">
+
+        <!-- Company -->
+        <label for="company">Company Name</label>
+
+        <input
+            type="text"
+            id="company"
+            name="company"
+            value="{{ job.company }}"
+            required
+        >
+
+
+        <!-- Position -->
+        <label for="position">Position</label>
+
+        <input
+            type="text"
+            id="position"
+            name="position"
+            value="{{ job.position }}"
+            required
+        >
+
+
+        <!-- Location -->
+        <label for="location">Location</label>
+
+        <input
+            type="text"
+            id="location"
+            name="location"
+            value="{{ job.location or '' }}"
+        >
+
+
+        <!-- Status -->
+        <label for="status">Status</label>
+
+        <select id="status" name="status">
+
+            <option value="Applied"
+                {% if job.status == "Applied" %}selected{% endif %}>
+                Applied
+            </option>
+
+            <option value="Interview"
+                {% if job.status == "Interview" %}selected{% endif %}>
+                Interview
+            </option>
+
+            <option value="Selected"
+                {% if job.status == "Selected" %}selected{% endif %}>
+                Selected
+            </option>
+
+            <option value="Rejected"
+                {% if job.status == "Rejected" %}selected{% endif %}>
+                Rejected
+            </option>
+
+        </select>
+
+
+        <!-- Applied Date -->
+        <label for="applied_date">Applied Date</label>
+
+        <input
+            type="date"
+            id="applied_date"
+            name="applied_date"
+            value="{{ job.applied_date or '' }}"
+        >
+
+
+        <!-- Buttons -->
+        <button type="submit">
+            Update Job
+        </button>
+
+        <a href="/" class="cancel-btn">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

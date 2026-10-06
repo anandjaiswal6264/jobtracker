@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Job Application Tracker</h1>
+
+
+<!-- DASHBOARD -->
+
+<div class="stats">
+
+    <div class="card">
+        <h3>Total</h3>
+        <p>{{ total }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Applied</h3>
+        <p>{{ applied }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Interview</h3>
+        <p>{{ interview }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Selected</h3>
+        <p>{{ selected }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Rejected</h3>
+        <p>{{ rejected }}</p>
+    </div>
+
+</div>
+
+
+<!-- SEARCH -->
+
+<form method="GET" action="/">
+
+    <input
+        type="text"
+        name="search"
+        placeholder="Search company or position"
+        value="{{ search }}"
+    >
+
+
+    <select name="status">
+
+        <option value="">All Status</option>
+
+        <option value="Applied"
+        {% if status == "Applied" %}selected{% endif %}>
+            Applied
+        </option>
+
+        <option value="Interview"
+        {% if status == "Interview" %}selected{% endif %}>
+            Interview
+        </option>
+
+        <option value="Selected"
+        {% if status == "Selected" %}selected{% endif %}>
+            Selected
+        </option>
+
+        <option value="Rejected"
+        {% if status == "Rejected" %}selected{% endif %}>
+            Rejected
+        </option>
+
+    </select>
+
+
+    <button type="submit">
+        Search
+    </button>
+
+    <a href="/">
+        Clear
+    </a>
+
+</form>
+
+
+<!-- JOB TABLE -->
+
+<h2>Job Applications</h2>
+
+<table>
+
+    <tr>
+
+        <th>ID</th>
+
+        <th>Company</th>
+
+        <th>Position</th>
+
+        <th>Location</th>
+
+        <th>Status</th>
+
+        <th>Date</th>
+
+        <th>Action</th>
+
+    </tr>
+
+
+    {% for job in jobs %}
+
+    <tr>
+
+        <td>{{ job.id }}</td>
+
+        <td>{{ job.company }}</td>
+
+        <td>{{ job.position }}</td>
+
+        <td>{{ job.location }}</td>
+
+        <td>{{ job.status }}</td>
+
+        <td>{{ job.applied_date }}</td>
+
+        <td>
+
+            <a href="/edit/{{ job.id }}">
+                Edit
+            </a>
+
+            |
+
+            <a
+                href="/delete/{{ job.id }}"
+                onclick="return confirm('Delete this job?')"
+            >
+                Delete
+            </a>
+
+        </td>
+
+    </tr>
+
+    {% else %}
+
+    <tr>
+
+        <td colspan="7">
+            No jobs found.
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock %}
+
+
+
+
+
