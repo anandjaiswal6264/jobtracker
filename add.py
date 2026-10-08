@@ -1,43 +1,51 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
+import os
 
 app = Flask(__name__)
 
-# Database
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///jobtrack.db"
+# ============================================================
+# DATABASE
+# ============================================================
+
+# Use /tmp on Vercel because its filesystem is temporary.
+# For local development, use the instance folder.
+if os.environ.get("VERCEL"):
+    database_url = "sqlite:////tmp/jobtrack.db"
+else:
+    database_url = "sqlite:///jobtrack.db"
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
 
-# ==============================
+# ============================================================
 # JOB MODEL
-# ==============================
+# ============================================================
 
 class Job(db.Model):
-
     id = db.Column(db.Integer, primary_key=True)
-
     company = db.Column(db.String(100), nullable=False)
-
     position = db.Column(db.String(100), nullable=False)
-
     location = db.Column(db.String(100), nullable=False)
-
     status = db.Column(db.String(50), nullable=False)
-
     applied_date = db.Column(db.String(20), nullable=False)
 
 
-# Create database
+# ============================================================
+# CREATE DATABASE
+# ============================================================
+
 with app.app_context():
     db.create_all()
 
 
-# ==============================
+# ============================================================
 # HOME
-# ==============================
+# ============================================================
 
 @app.route("/")
 def home():
@@ -47,7 +55,7 @@ def home():
 
     query = Job.query
 
-    # Search
+    # Search by company or position
     if search:
         query = query.filter(
             or_(
@@ -56,11 +64,9 @@ def home():
             )
         )
 
-    # Filter
+    # Filter by status
     if status:
-        query = query.filter(
-            Job.status == status
-        )
+        query = query.filter(Job.status == status)
 
     jobs = query.all()
 
@@ -96,9 +102,9 @@ def home():
     )
 
 
-# ==============================
+# ============================================================
 # ADD JOB
-# ==============================
+# ============================================================
 
 @app.route("/add", methods=["GET", "POST"])
 def add_job():
@@ -127,9 +133,9 @@ def add_job():
     return render_template("add_job.html")
 
 
-# ==============================
+# ============================================================
 # EDIT JOB
-# ==============================
+# ============================================================
 
 @app.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit_job(id):
@@ -154,9 +160,9 @@ def edit_job(id):
     )
 
 
-# ==============================
+# ============================================================
 # DELETE JOB
-# ==============================
+# ============================================================
 
 @app.route("/delete/<int:id>")
 def delete_job(id):
@@ -169,9 +175,9 @@ def delete_job(id):
     return redirect(url_for("home"))
 
 
-# ==============================
+# ============================================================
 # API - GET ALL JOBS
-# ==============================
+# ============================================================
 
 @app.route("/api/jobs", methods=["GET"])
 def get_jobs():
@@ -181,7 +187,6 @@ def get_jobs():
     result = []
 
     for job in jobs:
-
         result.append({
             "id": job.id,
             "company": job.company,
@@ -194,9 +199,9 @@ def get_jobs():
     return jsonify(result)
 
 
-# ==============================
+# ============================================================
 # API - GET ONE JOB
-# ==============================
+# ============================================================
 
 @app.route("/api/jobs/<int:id>", methods=["GET"])
 def get_one_job(id):
@@ -213,9 +218,9 @@ def get_one_job(id):
     })
 
 
-# ==============================
+# ============================================================
 # API - CREATE JOB
-# ==============================
+# ============================================================
 
 @app.route("/api/jobs", methods=["POST"])
 def create_job():
@@ -254,9 +259,9 @@ def create_job():
     }), 201
 
 
-# ==============================
+# ============================================================
 # API - UPDATE JOB
-# ==============================
+# ============================================================
 
 @app.route("/api/jobs/<int:id>", methods=["PUT"])
 def update_job(id):
@@ -302,9 +307,9 @@ def update_job(id):
     })
 
 
-# ==============================
+# ============================================================
 # API - DELETE JOB
-# ==============================
+# ============================================================
 
 @app.route("/api/jobs/<int:id>", methods=["DELETE"])
 def delete_job_api(id):
@@ -319,9 +324,9 @@ def delete_job_api(id):
     })
 
 
-# ==============================
-# RUN
-# ==============================
+# ============================================================
+# RUN APPLICATION
+# ============================================================
 
 if __name__ == "__main__":
     app.run(debug=True)
